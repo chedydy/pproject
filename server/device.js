@@ -20,8 +20,8 @@ router.ws('/', function (ws, req) {
                 admin.database().ref("/users").once('value', function (snapshot) {
                     if (snapshot.val()) {
                         var users = snapshot.val();
-                        const users = _.map(users, (val, uid) => {
-                            return { ...val, uid };
+                        users = _.map(users, (val, uid) => {
+                            return { name: val.name, uid: uid, pushtoken: val.pushtoken };
                         });
                         let messages = [];
                         for (var index = 0; index < users.length; index++) {
@@ -39,16 +39,14 @@ router.ws('/', function (ws, req) {
                             })
                         }
                         let chunks = expo.chunkPushNotifications(messages);
-                        (async () => {
-                            for (let chunk of chunks) {
-                                try {
-                                    let receipts = await expo.sendPushNotificationsAsync(chunk);
-                                    console.log(receipts);
-                                } catch (error) {
-                                    console.error(error);
-                                }
+                        for (let chunk of chunks) {
+                            try {
+                                let receipts = expo.sendPushNotificationsAsync(chunk);
+                                console.log(receipts);
+                            } catch (error) {
+                                console.error(error);
                             }
-                        })();
+                        }
                     }
                 });
                 break;
@@ -91,16 +89,14 @@ router.post('/request-trade', authorization, function (req, res) {
                         },
                     })
                     let chunks = expo.chunkPushNotifications(messages);
-                    (async () => {
-                        for (let chunk of chunks) {
-                            try {
-                                let receipts = await expo.sendPushNotificationsAsync(chunk);
-                                console.log(receipts);
-                            } catch (error) {
-                                console.error(error);
-                            }
+                    for (let chunk of chunks) {
+                        try {
+                            let receipts = expo.sendPushNotificationsAsync(chunk);
+                            console.log(receipts);
+                        } catch (error) {
+                            console.error(error);
                         }
-                    })();
+                    }
                 }
             });
         }
