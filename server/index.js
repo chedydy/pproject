@@ -3,11 +3,13 @@ var app = express();
 var expressWs = require('express-ws')(app);
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var router = express.Router();
 var admin = require("firebase-admin");
 var serviceAccount = require("./key.json");
-var loginRoutes = require('./login');
-
+var registerRoutes = require('./register');
+var historyRoutes = require('./history');
+var deviceRoutes = require('./device');
+var authorization = require('./authorization');
+var queueRoutes=require('./queue');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://coffeequeue-1bf68.firebaseio.com"
@@ -33,19 +35,10 @@ app.use(function (req, res, next) {
 app.use('/chedy', function (req, res) {
     res.send('ceva');
 });
-router.ws('/', function (ws, req, res) {
-    var webSockets = ws;
-    ws.on('error', function (error) { console.log(error); });
-    ws.on('message', function (msg) {
-        //var plantMap = JSON.parse(msg);
-        var message_to_client = {
-            data: "Connection with the server established"
-        }
-        ws.send(JSON.stringify(message_to_client));
-    });
-});
-app.use('/chedyws', router);
-app.use('/login', loginRoutes);
+app.use('/register', registerRoutes);
+app.use('/device', deviceRoutes);
+app.use('/queue',authorization, queueRoutes);
+app.use('/history',authorization, historyRoutes);
 app.set('port', 3000);
 
 var server = app.listen(app.get('port'), function () {
