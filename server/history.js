@@ -5,7 +5,7 @@ var admin = require("firebase-admin");
 router.get('/', function (req, res) {
     admin.database().ref("/history").once('value', function(snapshot) {
         if(snapshot.val()){
-            res.send(snapshot.val());
+            res.json(snapshot.val());
         }
     });
 });

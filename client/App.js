@@ -17,6 +17,7 @@ import store from './store';
 import LoginComponent from './Components/LoginComponent';
 import HistoryComponent from './Components/HistoryComponent';
 import QueueComponent from './Components/QueueComponent';
+import HeaderNavigatorComponent from './Components/HeaderNavigator';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -58,20 +59,21 @@ export default class App extends React.Component {
         screen: LoginComponent
       },
       main: {
-        screen: TabNavigator({
-          queue: {
-            screen: QueueComponent
-          },
-          history: {
-            screen: HistoryComponent
-          }
-        }, {
-            tabBarPosition: 'bottom',
-            navigationOptions: {
-              tabBarVisible: true
-            },
-            lazy: true
-          })
+        screen: HeaderNavigatorComponent
+        // screen: TabNavigator({
+        //   queue: {
+        //     screen: QueueComponent
+        //   },
+        //   history: {
+        //     screen: HistoryComponent
+        //   }
+        // }, {
+        //     tabBarPosition: 'bottom',
+        //     navigationOptions: {
+        //       tabBarVisible: true,
+        //     },
+        //     lazy: true
+        //   })
       }
     }, {
         initialRouteName: this.state.isLoggedIn

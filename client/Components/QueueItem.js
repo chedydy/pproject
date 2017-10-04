@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Text, View, Image, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
+import { requestTrade } from '../actions';
 
-export default class QueueItem extends Component {
+class QueueItem extends Component {
 
     onRowPress() {
-        console.log('rezervat');
-        // Actions.plantedit({ plant: this.props.plant });
+        this.props.requestTrade({ id: this.props.coffeeItem.uid });
     }
 
     render() {
-        console.log(this.props);
         const { reservedBy } = this.props.coffeeItem;
         const { cardSectionStyle, thumbnailStyle, titleStyle, titleViewStyle, imageViewStyle } = styles;
         return (
@@ -66,6 +66,7 @@ const styles = {
 
     thumbnailStyle: {
         flex: 1,
-        //borderRadius: 100
     }
 };
+
+export default connect(null, { requestTrade })(QueueItem)

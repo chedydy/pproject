@@ -1,32 +1,21 @@
-import React, {Component} from 'react';
-import {ListView, View} from 'react-native';
+import React, { Component } from 'react';
+import { ListView, View } from 'react-native';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { historyFetch } from '../actions';
 import HistoryItem from './HistoryItem';
 
-export default class HistoryComponent extends Component {
-    coffeeHistory = [];
+class HistoryComponent extends Component {
     componentWillMount() {
-        this.coffeeHistory = [
-            {
-                completedDate: new Date().toLocaleDateString(),
-                name: 'test'
-            }, {
-                completedDate: new Date().toLocaleDateString(),
-                name: 'test2'
-            }, {
-                completedDate: new Date().toLocaleDateString(),
-                name: 'test3'
-            }
-        ]
-        this.createDataSource(this.coffeeHistory);
+        this.props.historyFetch();
+        this.createDataSource(this.props)
     }
 
-    // componentWillReceiveProps(nextprops) {     this.createDataSource(nextprops);
-    // }
     componentWillReceiveProps(nextprops) {
-        this.createDataSource(this.coffeeHistory);
+        this.createDataSource(nextprops);
     }
 
-    createDataSource(coffeeHistory) {
+    createDataSource({ coffeeHistory }) {
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
@@ -35,15 +24,12 @@ export default class HistoryComponent extends Component {
     }
 
     renderRow(coffeeHistoryItem) {
-        return <HistoryItem coffeeHistoryItem={coffeeHistoryItem}/>;
+        return <HistoryItem coffeeHistoryItem={coffeeHistoryItem} />;
     }
 
     render() {
         return (
             <ListView
-                style={{
-                paddingTop: 30
-            }}
                 enableEmptySections
                 dataSource={this.dataSource}
                 renderRow={this.renderRow}></ListView>
@@ -52,7 +38,10 @@ export default class HistoryComponent extends Component {
     }
 }
 
-// const mapStateToProps = state => {     const plants = _.map(state.plants,
-// (val, uid) => {         return {             ...val,             uid
-// };     });     return {plants}; }; export default connect(mapStateToProps,
-// {plantsFetch})(PlantList);
+const mapStateToProps = state => {
+    const coffeeHistory = _.map(state.history,
+        (val, uid) => { return { ...val, uid }; });
+    return { coffeeHistory };
+};
+
+export default connect(mapStateToProps, { historyFetch })(HistoryComponent);

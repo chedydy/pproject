@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { ListView, View, StyleSheet, Text, Image } from 'react-native';
-import _ from 'lodash';
 import { connect } from 'react-redux';
 import Swiper from 'react-native-swiper';
+import _ from 'lodash';
 import QueueItem from './QueueItem';
 import { queueFetch } from '../actions';
 
@@ -17,7 +17,7 @@ class QueueComponent extends Component {
         this.createDataSource(nextprops);
     }
 
-    createDataSource({coffeeQueue}) {
+    createDataSource({ coffeeQueue }) {
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
@@ -32,11 +32,11 @@ class QueueComponent extends Component {
         return (
             <View
                 style={{
-                    paddingTop: 30,
-                    flex: 1
+                  flex: 1
                 }}>
                 <View >
                     <ListView
+                        style={styles.listStyle}
                         dataSource={this.dataSource}
                         renderRow={this.renderRow}></ListView>
                 </View>
@@ -61,6 +61,7 @@ class QueueComponent extends Component {
 }
 
 var styles = StyleSheet.create({
+    listStyle: { backgroundColor: 'white' },
     wrapper: {
         flex: 1
     },
