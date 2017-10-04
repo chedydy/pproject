@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Text, View, Image, TouchableOpacity} from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, Image, TouchableOpacity } from 'react-native';
 
 export default class QueueItem extends Component {
 
@@ -9,24 +9,25 @@ export default class QueueItem extends Component {
     }
 
     render() {
-        const {name} = this.props.coffeeItem;
-        const {cardSectionStyle, thumbnailStyle, titleStyle, titleViewStyle, imageViewStyle} = styles;
+        console.log(this.props);
+        const { reservedBy } = this.props.coffeeItem;
+        const { cardSectionStyle, thumbnailStyle, titleStyle, titleViewStyle, imageViewStyle } = styles;
         return (
             <TouchableOpacity
                 onPress={this
-                .onRowPress
-                .bind(this)}>
+                    .onRowPress
+                    .bind(this)}>
                 <View style={cardSectionStyle}>
                     <View style={imageViewStyle}>
                         <Image
                             source={{
-                            uri: 'https://image.flaticon.com/icons/png/512/11/11118.png'
-                        }}
-                            style={thumbnailStyle}/>
+                                uri: 'https://image.flaticon.com/icons/png/512/11/11118.png'
+                            }}
+                            style={thumbnailStyle} />
                     </View>
                     <View style={titleViewStyle}>
                         <Text style={titleStyle}>
-                            Reserved by: {name}.
+                            Reserved by: {reservedBy}.
                         </Text>
                         <Text style={titleStyle}>
                             Touch to request coffee trade

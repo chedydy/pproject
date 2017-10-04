@@ -11,38 +11,33 @@ import Expo from 'expo';
 import firebase from 'firebase';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Permissions, Notifications} from 'expo';
-var flag = false;
+import { Permissions, Notifications } from 'expo';
 export default class LoginComponent extends React.Component {
     async onLoginSuccess(user) {
         try {
             let token = await AsyncStorage.getItem('pushtoken');
             if (!token) {
-                let {status} = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS)
+                let { status } = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS)
                 if (status !== 'granted') {
                     return;
                 }
                 let token = await Notifications.getExponentPushTokenAsync();
-                flag = true;
                 AsyncStorage.setItem('pushtoken', token);
             }
-            var uid = await axios.post('/register', {
+            var res = await axios.post('/register', {
                 idToken: user.uid,
                 pushToken: token
             })
-            axios.defaults.headers.post['authorization'] = uid;
-            AsyncStorage.setItem('logintoken', uid);
-            console.log(this.props.navigation);
-            const {navigate} = this.props.navigation;
-
+            axios.defaults.headers.post['authorization'] = res.data.idToken;
+            await AsyncStorage.setItem('logintoken', res.data.idToken)
+            var token = await AsyncStorage.getItem('logintoken');
+            const { navigate } = this.props.navigation;
             navigate('queue');
         } catch (error) {
             console.log(error);
         }
     }
     async onPressLogin() {
-        console.log(this.props);
-
         try {
             const result = await Expo
                 .Google
@@ -55,41 +50,37 @@ export default class LoginComponent extends React.Component {
                     .auth
                     .GoogleAuthProvider
                     .credential(result.idToken);
-                firebase
+                let user = await firebase
                     .auth()
-                    .signInWithCredential(credential)
-                    .then((user) => this.onLoginSuccess(user))
-                    .catch(function (error) {
-                        console.log(error.message);
-                    });
-                return result.accessToken;
+                    .signInWithCredential(credential);
+                await this.onLoginSuccess(user);
             } else {
-                return {cancelled: true};
+                return;
             }
         } catch (e) {
-            return {error: true};
+            console.log(e);
         }
     }
 
     async logInFb() {
-        const {type, token} = await Expo
-            .Facebook
-            .logInWithReadPermissionsAsync('169097840310974', {permissions: ['public_profile']});
+        try {
+            const { type, token } = await Expo
+                .Facebook
+                .logInWithReadPermissionsAsync('169097840310974', { permissions: ['public_profile'] });
 
-        if (type === 'success') {
-            const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-            var credential = firebase
-                .auth
-                .FacebookAuthProvider
-                .credential(token);
-            firebase
-                .auth()
-                .signInWithCredential(credential)
-                .then((user) => this.onLoginSuccess(user))
-                .catch(function (error) {
-                    console.log(error.message);
-                });
-
+            if (type === 'success') {
+                const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+                var credential = firebase
+                    .auth
+                    .FacebookAuthProvider
+                    .credential(token);
+                let user = await firebase
+                    .auth()
+                    .signInWithCredential(credential);
+                await this.onLoginSuccess(user);
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
     render() {
@@ -102,9 +93,9 @@ export default class LoginComponent extends React.Component {
                     <View style={styles.avatar}>
                         <Image
                             source={{
-                            uri: "http://www.free-icons-download.net/images/hot-coffee-icon-68966.png"
-                        }}
-                            style={styles.avatarImage}/>
+                                uri: "http://www.free-icons-download.net/images/hot-coffee-icon-68966.png"
+                            }}
+                            style={styles.avatarImage} />
                     </View>
                 </View>
                 <View style={styles.buttons}>
@@ -112,8 +103,8 @@ export default class LoginComponent extends React.Component {
                         name="facebook"
                         backgroundColor="#3b5998"
                         onPress={this
-                        .logInFb
-                        .bind(this)}
+                            .logInFb
+                            .bind(this)}
                         {...iconStyles}>
                         Login with Facebook
                     </Icon.Button>
@@ -121,8 +112,8 @@ export default class LoginComponent extends React.Component {
                         name="google"
                         backgroundColor="#DD4B39"
                         onPress={this
-                        .onPressLogin
-                        .bind(this)}
+                            .onPressLogin
+                            .bind(this)}
                         {...iconStyles}>
                         Or with Google
                     </Icon.Button>

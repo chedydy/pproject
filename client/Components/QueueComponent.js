@@ -1,62 +1,51 @@
-import React, {Component} from 'react';
-import {ListView, View, StyleSheet, Text, Image} from 'react-native';
+import React, { Component } from 'react';
+import { ListView, View, StyleSheet, Text, Image } from 'react-native';
+import _ from 'lodash';
+import { connect } from 'react-redux';
 import Swiper from 'react-native-swiper';
 import QueueItem from './QueueItem';
+import { queueFetch } from '../actions';
 
-export default class QueueComponent extends Component {
-    coffeeQueue = [];
+class QueueComponent extends Component {
+
     componentWillMount() {
-        this.coffeeQueue = [
-            {
-                name: 'test'
-            }, {
-                name: 'test2'
-            }
-        ]
-        this.createDataSource(this.coffeeQueue);
+        this.props.queueFetch();
+        this.createDataSource(this.props)
     }
 
-    // componentWillReceiveProps(nextprops) {     this.createDataSource(nextprops);
-    // }
     componentWillReceiveProps(nextprops) {
-        this.createDataSource(this.coffeeQueue);
+        this.createDataSource(nextprops);
     }
 
-    createDataSource(coffeeQueue) {
+    createDataSource({coffeeQueue}) {
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
-
         this.dataSource = ds.cloneWithRows(coffeeQueue);
     }
 
     renderRow(coffeeItem) {
-        return <QueueItem coffeeItem={coffeeItem}/>;
+        return <QueueItem coffeeItem={coffeeItem} />;
     }
 
     render() {
         return (
             <View
                 style={{
-                paddingTop: 30,
-                flex: 1
-            }}>
-                <View style={{
+                    paddingTop: 30,
                     flex: 1
                 }}>
+                <View >
                     <ListView
-                        enableEmptySections
                         dataSource={this.dataSource}
                         renderRow={this.renderRow}></ListView>
                 </View>
-                {/* <View style={{
+                <View style={{
                     flex: 1
                 }}>
                     <Swiper style={styles.wrapper} showsButtons={true}>
                         <View style={styles.slide1}>
-                           
-                                <Text style={styles.text}>Hello Swiper</Text>
-
+                            <Text style={styles.text}>Hello Swiper</Text>
                         </View>
                         <View style={styles.slide2}>
                             <Text style={styles.text}>Beautiful</Text>
@@ -65,20 +54,13 @@ export default class QueueComponent extends Component {
                             <Text style={styles.text}>And simple</Text>
                         </View>
                     </Swiper>
-
-                </View> */}
-
+                </View>
             </View>
-
         );
-
     }
 }
 
 var styles = StyleSheet.create({
-    container: {
-        flex: 3
-    },
     wrapper: {
         flex: 1
     },
@@ -106,7 +88,10 @@ var styles = StyleSheet.create({
         fontWeight: 'bold'
     }
 })
-// const mapStateToProps = state => {     const plants = _.map(state.plants,
-// (val, uid) => {         return {             ...val,             uid }; });
-// return {plants}; }; export default connect(mapStateToProps,
-// {plantsFetch})(PlantList);
+const mapStateToProps = state => {
+    const coffeeQueue = _.map(state.queue,
+        (val, uid) => { return { ...val, uid }; });
+    return { coffeeQueue };
+};
+
+export default connect(mapStateToProps, { queueFetch })(QueueComponent);

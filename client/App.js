@@ -7,11 +7,13 @@ import {
   Image,
   AsyncStorage
 } from 'react-native';
-import {TabNavigator, StackNavigator} from 'react-navigation';
+import { TabNavigator, StackNavigator } from 'react-navigation';
 import Expo from 'expo';
 import firebase from 'firebase';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Provider } from 'react-redux';
+import store from './store';
 import LoginComponent from './Components/LoginComponent';
 import HistoryComponent from './Components/HistoryComponent';
 import QueueComponent from './Components/QueueComponent';
@@ -33,27 +35,24 @@ export default class App extends React.Component {
       messagingSenderId: "1069851885439"
     };
     firebase.initializeApp(config);
-    axios.defaults.baseURL = 'http://192.168.0.87:5000';
+    axios.defaults.baseURL = 'http://172.18.20.69:3000';
     axios.defaults.headers.post['Content-Type'] = 'application/json';
-    var isLoggedIn = true;
     AsyncStorage
       .getItem('logintoken')
       .then((value) => {
-        console.log(value);
         token = value;
         if (!token) {
-          this.setState({isLoggedIn: false});
+          this.setState({ isLoggedIn: false });
         } else {
           axios.defaults.headers.post['authorization'] = token;
-          this.setState({isLoggedIn: true});
+          axios.defaults.headers.get['authorization'] = token;
+          this.setState({ isLoggedIn: true });
         }
-        console.log(this.state);
       });
 
   }
 
   render() {
-
     const MainNavigator = StackNavigator({
       login: {
         screen: LoginComponent
@@ -67,28 +66,29 @@ export default class App extends React.Component {
             screen: HistoryComponent
           }
         }, {
-          tabBarPosition: 'bottom',
-          navigationOptions: {
-            tabBarVisible: true
-          },
-          lazy: true
-        })
+            tabBarPosition: 'bottom',
+            navigationOptions: {
+              tabBarVisible: true
+            },
+            lazy: true
+          })
       }
     }, {
-      initialRouteName: this.state.isLoggedIn
-        ? 'main'
-        : 'login',
-      headerMode: "none",
-      navigationOptions: {
-        gesturesEnabled: false
-      }
-    });
+        initialRouteName: this.state.isLoggedIn
+          ? 'main'
+          : 'login',
+        headerMode: "none",
+        navigationOptions: {
+          gesturesEnabled: false
+        }
+      });
 
-    // return (   <View>     <MainNavigator/>   </View> );
     return (
-      <View style={styles.container}>
-        <MainNavigator/>
-      </View>
+      <Provider store={store}>
+        <View style={styles.container}>
+          <MainNavigator />
+        </View>
+      </Provider>
     );
   }
 }

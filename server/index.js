@@ -39,7 +39,7 @@ app.use('/register', registerRoutes);
 app.use('/device', deviceRoutes);
 app.use('/queue',authorization, queueRoutes);
 app.use('/history',authorization, historyRoutes);
-app.set('port', 5000);
+app.set('port', 3000);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Express server listening on port ' + server.address().port);

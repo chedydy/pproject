@@ -13,8 +13,8 @@ router.post('/', function (req, res) {
                 pushtoken: req.body.pushToken
 
             });
-            res.send(req.body.idToken);
-            
+            res.json({ idToken: req.body.idToken });
+
         }).catch(function (error) {
             console.log(error);
             res.status(500).send('Authentication failed.');
