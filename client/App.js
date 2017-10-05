@@ -23,7 +23,8 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: false
+      isLoggedIn: false,
+      user: {}
     };
   }
   componentWillMount() {
@@ -47,7 +48,9 @@ export default class App extends React.Component {
         } else {
           axios.defaults.headers.post['authorization'] = token;
           axios.defaults.headers.get['authorization'] = token;
-          this.setState({ isLoggedIn: true });
+          axios.post('/users', { token })
+            .then((response) => { this.setState({ isLoggedIn: true, user: response.data }); })
+            .catch(() => { console.log('not logged'); this.setState({ isLoggedIn: false }); });
         }
       });
 
@@ -60,20 +63,6 @@ export default class App extends React.Component {
       },
       main: {
         screen: HeaderNavigatorComponent
-        // screen: TabNavigator({
-        //   queue: {
-        //     screen: QueueComponent
-        //   },
-        //   history: {
-        //     screen: HistoryComponent
-        //   }
-        // }, {
-        //     tabBarPosition: 'bottom',
-        //     navigationOptions: {
-        //       tabBarVisible: true,
-        //     },
-        //     lazy: true
-        //   })
       }
     }, {
         initialRouteName: this.state.isLoggedIn
@@ -88,7 +77,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <View style={styles.container}>
-          <MainNavigator />
+          <MainNavigator screenProps={this.state.isLoggedIn ? this.state.user : {}} />
         </View>
       </Provider>
     );

@@ -28,6 +28,7 @@ class HeaderNavigatorComponent extends Component {
     };
 
     componentWillMount() {
+
         this._notificationSubscription = Notifications.addListener(this._handleNotification);
     }
     render() {
@@ -46,6 +47,7 @@ class HeaderNavigatorComponent extends Component {
                 lazy: true
             });
         const { cardSectionStyle, thumbnailStyle, text, titleViewStyle, imageViewStyle } = styles;
+        const { name, photoUrl } = this.props.screenProps;
         return (
             <View
                 style={{
@@ -55,13 +57,13 @@ class HeaderNavigatorComponent extends Component {
                     <View style={imageViewStyle}>
                         <Image
                             source={{
-                                uri: 'https://image.flaticon.com/icons/png/512/11/11118.png'
+                                uri: photoUrl
                             }}
                             style={thumbnailStyle} />
                     </View>
                     <View style={titleViewStyle}>
                         <Text style={text}>
-                            Test Name
+                            {name}
                         </Text>
                     </View>
                 </View>
@@ -99,11 +101,13 @@ var styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     titleViewStyle: {
-        flex: 85,
-
+        flex: 8,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
     },
     imageViewStyle: {
-        flex: 15,
+        flex: 2,
         paddingRight: 15
     },
 

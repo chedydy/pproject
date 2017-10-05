@@ -10,6 +10,7 @@ var historyRoutes = require('./history');
 var deviceRoutes = require('./device');
 var authorization = require('./authorization');
 var queueRoutes=require('./queue');
+var users=require('./users');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://coffeequeue-1bf68.firebaseio.com"
@@ -39,6 +40,7 @@ app.use('/register', registerRoutes);
 app.use('/device', deviceRoutes);
 app.use('/queue',authorization, queueRoutes);
 app.use('/history',authorization, historyRoutes);
+app.use('/users', users);
 app.set('port', 3000);
 
 var server = app.listen(app.get('port'), function () {

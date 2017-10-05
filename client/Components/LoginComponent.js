@@ -32,7 +32,9 @@ export default class LoginComponent extends React.Component {
             await AsyncStorage.setItem('logintoken', res.data.idToken)
             var token = await AsyncStorage.getItem('logintoken');
             const { navigate } = this.props.navigation;
-            navigate('queue');
+            axios.post('/users', { token })
+                .then((response) => navigate('main', { user: response.data }))
+                .catch(() => navigate('login'));
         } catch (error) {
             console.log(error);
         }
