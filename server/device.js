@@ -4,9 +4,8 @@ var admin = require("firebase-admin");
 var authorization = require('./authorization');
 var Expo = require('expo-server-sdk');
 var _ = require('lodash');
-var websocket;
 router.ws('/', function (ws, req) {
-    webSocket = ws;
+    global.webSocket = ws;
     ws.on('error', function (error) { console.log(error); });
     ws.on('message', function (msg) {
         var data = JSON.parse(msg);
@@ -153,21 +152,38 @@ router.post('/complete-trade', authorization, function (req, res) {
         }
     });
 
-    if (websocket) {
-        websocket.send(JSON.stringify({ id: req.body.id, reservedBy: req.body.name }));
+    if (global.websocket) {
+        global.websocket.send(JSON.stringify({ id: req.body.id, reservedBy: req.body.name }));
     }
 });
 
 router.post('/reserve', authorization, function (req, res) {
-    admin.database().ref('/queue').child(req.body.id).set({
-        reservedBy: req.user.displayName,
-        reservedById: req.uid,
-        reserved: true,
-        available: false
+    let queueRef = admin.database().ref("/queue");
+    queueRef.once('value', function (snapshot) {
+        if (snapshot.val()) {
+            var queue = snapshot.val();
+            var coffee = queue[req.body.id];
+            if (!coffee.available) {
+                res.status(500).send('Coffee was already reserved');
+            }
+            else {
+                queueRef.child(req.body.id).set({
+                    reservedBy: req.user.displayName,
+                    reservedById: req.uid,
+                    reserved: true,
+                    available: false
+                });
+                if (global.websocket) {
+                    global.websocket.send(JSON.stringify({ id: req.body.id, reservedBy: req.user.displayName }));
+                }
+                res.send('ok');
+            }
+        } else {
+            console.error("Coffee was allready taken.");
+            res.status(500).send("Coffee was allready taken.");
+        }
     });
-    if (websocket) {
-        websocket.send(JSON.stringify({ id: req.body.id, reservedBy: req.user.displayName }));
-    }
-    res.send('ok');
+
+
 });
 module.exports = router;

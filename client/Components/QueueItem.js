@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
 import { Text, View, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { requestTrade } from '../actions';
+import { requestTrade, reserveCoffee } from '../actions';
 
 class QueueItem extends Component {
 
     onRowPress() {
-        this.props.requestTrade({ id: this.props.coffeeItem.uid });
+        const { available } = this.props.coffeeItem;
+        if (available) {
+            this.props.reserveCoffee({ id: this.props.coffeeItem.uid });
+        } else {
+            this.props.requestTrade({ id: this.props.coffeeItem.uid });
+        }
     }
 
     render() {
-        const { reservedBy } = this.props.coffeeItem;
+        const { reservedBy, available } = this.props.coffeeItem;
         const { cardSectionStyle, thumbnailStyle, titleStyle, titleViewStyle, imageViewStyle } = styles;
         return (
             <TouchableOpacity
@@ -25,14 +30,26 @@ class QueueItem extends Component {
                             }}
                             style={thumbnailStyle} />
                     </View>
-                    <View style={titleViewStyle}>
-                        <Text style={titleStyle}>
-                            Reserved by: {reservedBy}.
-                        </Text>
-                        <Text style={titleStyle}>
-                            Touch to request coffee trade
-                        </Text>
-                    </View>
+                    {
+                        available ?
+                            <View style={titleViewStyle}>
+                                <Text style={titleStyle}>
+                                    Free coffee.
+                                </Text>
+                                <Text style={titleStyle}>
+                                    Touch to reserve
+                                </Text>
+                            </View>
+                            :
+                            <View style={titleViewStyle}>
+                                <Text style={titleStyle}>
+                                    Reserved by: {reservedBy}.
+                                </Text>
+                                <Text style={titleStyle}>
+                                    Touch to request coffee trade
+                                </Text>
+                            </View>
+                    }
                 </View>
             </TouchableOpacity>
         );
@@ -69,4 +86,4 @@ const styles = {
     }
 };
 
-export default connect(null, { requestTrade })(QueueItem)
+export default connect(null, { requestTrade, reserveCoffee })(QueueItem)

@@ -1,18 +1,29 @@
 import React, { Component } from 'react';
-import { ListView, View, StyleSheet, Text, Image } from 'react-native';
+import { ListView, View, StyleSheet, Text, Image, Alert } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 import { Notifications } from 'expo';
 import { connect } from 'react-redux';
 import HistoryComponent from './HistoryComponent';
 import QueueComponent from './QueueComponent';
-import { reserve, acceptTrade } from '../actions';
+import { reserve, acceptTrade, queueFetch } from '../actions';
 
 class HeaderNavigatorComponent extends Component {
     _handleNotification = (notification) => {
         console.log(notification.data);
         switch (notification.data.type) {
             case 'reserve': this.props.reserve(notification.data.body); break;
-            case 'trade': this.props.acceptTrade(notification.data.body); break;
+            case 'trade':
+                Alert.alert(
+                    'Trade request',
+                    `${notification.data.body.name} has requested a trade. Accept?`,
+                    [
+                        { text: 'Yes', onPress: () => this.props.acceptTrade(notification.data.body) },
+                        { text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel' }
+                    ],
+                    { cancelable: false }
+                )
+                break;
+            case 'trade-complete': this.props.queueFetch(); break;
         }
     };
 
@@ -103,4 +114,4 @@ var styles = StyleSheet.create({
 })
 
 
-export default connect(null, { acceptTrade, reserve })(HeaderNavigatorComponent);
+export default connect(null, { acceptTrade, reserve, queueFetch })(HeaderNavigatorComponent);
