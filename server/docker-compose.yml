@@ -1,0 +1,15 @@
+version: '2'
+services:
+  coffeq_api:
+    build: .
+    image: chedydy/api
+    container_name: api
+    ports:
+      - "80:80"
+    networks:
+      - coffeq
+
+networks:
+  coffeq:
+    external:
+      name: coffeq
