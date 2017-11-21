@@ -9,7 +9,7 @@ ws.on("open", function open() {
     var option = d.toString().trim();
     switch (option) {
       case "1":
-        ws.send(JSON.stringify({ type: "available", body: { id: "test4" } }));
+        ws.send(JSON.stringify({ type: "available", body: { id: "test3" } }));
         break;
       case "2":
         ws.send(
