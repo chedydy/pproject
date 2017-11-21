@@ -1,5 +1,15 @@
 {
   "expo": {
-    "sdkVersion": "21.0.0"
+    "sdkVersion": "21.0.0",
+	"name": "CoffeeQ",
+    "icon": "./hot-coffee-icon-68966.png",
+    "version": "1.0.0",
+    "slug": "coffeeq",
+    "ios": {
+      "bundleIdentifier": "com.dianap.coffeeq"
+    },
+    "android": {
+      "package": "com.dianap.coffeeq"
+    }
   }
 }
