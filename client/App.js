@@ -37,7 +37,7 @@ export default class App extends React.Component {
       messagingSenderId: "1069851885439"
     };
     firebase.initializeApp(config);
-    axios.defaults.baseURL = 'http://10.12.20.122:3000';
+    axios.defaults.baseURL = 'http://192.168.0.10:3000';
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     AsyncStorage
       .getItem('logintoken')
