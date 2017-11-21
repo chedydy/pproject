@@ -1,5 +1,5 @@
 var WebSocket = require("ws");
-var ws = new WebSocket("ws://localhost:3000/device");
+var ws = new WebSocket("ws://52.164.252.68:3000/device");
 ws.on("open", function open() {
   console.log("1. New coffee");
   console.log("2. Pickup coffee");
